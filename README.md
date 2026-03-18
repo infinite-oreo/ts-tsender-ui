@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TSender UI
 
-## Getting Started
+A 100% client-side UI for the TSender contract.
 
-First, run the development server:
+Smart Contracts: https://github.com/Cyfrin/TSender/
+
+- [TSender UI](#tsender-ui)
+- [Getting Started](#getting-started)
+    - [Requirements](#requirements)
+        - [Environment Variables](#environment-variables)
+    - [Setup](#setup)
+- [Testing](#testing)
+    - [Unit](#unit)
+    - [e2e](#e2e)
+- [Contributing](#contributing)
+
+# Getting Started
+
+## Requirements
+
+- [node](https://nodejs.org/en/download)
+    - You'll know you've installed it right if you can run `node --version` and get a response like `v23.0.1`
+- [pnpm](https://pnpm.io/)
+    - You'll know you've installed it right if you can run `pnpm --version` and get a response like `10.1.0`
+- [git](https://git-scm.com/downloads)
+    - You'll know you've installed it right if you can run `git --version` and get a response like `git version 2.33.0`
+
+### Environment Variables
+
+You'll need a `.env.local` the following environment variables:
+
+- `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`: Project ID from [reown cloud](https://cloud.reown.com/)
+
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/cyfrin/tsender-ui
+cd tsender-ui
+pnpm install
+pnpm anvil
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+You'll want to make sure you have a Metamask/Rabby wallet connected to your anvil instance. Ideally you're connected to the wallet that comes with the default anvil instance. This will have some mock tokens in it.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Then, in a second browser run:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm run dev
+```
 
-## Learn More
+# Testing
 
-To learn more about Next.js, take a look at the following resources:
+## Unit
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+pnpm test:unit
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## e2e
 
-## Deploy on Vercel
+Playwright should also install the browsers needed to run tests.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To test e2e, do the following
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm cache
+```
+
+Then run:
+
+```bash
+pnpm test:e2e
+```
+
+This will throw an error like:
+
+```
+Error: Cache for 08a20e3c7fc77e6ae298 does not exist. Create it first!
+```
+
+The `08a20e3c7fc77e6ae298` is your `CACHE_NAME`
+
+In your `.cache-synpress` folder, rename the folder that isn't `metamask-chrome-***` to your `CACHE_NAME`.
+
+Then, you should be able to run:
+
+```
+pnpm test:e2e
+```
+
+And it'll work!
+
+# Contributing
+
+For those who want to contribute, including running tests, please see the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
+
+<!-- # Install from scratch notes
+
+When adding Tailwind, remember to remove `supports-color` -->
+
+<!-- Testing: -->
+<!-- -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/dom vite-tsconfig-paths -->
