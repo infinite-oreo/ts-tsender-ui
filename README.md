@@ -1,8 +1,6 @@
 # TSender UI
 
-ERC20 批量空投前端，100% 客户端渲染，对接 TSender 合约。
-
-智能合约仓库：https://github.com/Cyfrin/TSender/
+ERC20 批量空投前端，100% 客户端渲染。
 
 **技术栈：** Next.js 16 · Tailwind v4 · wagmi v3 · RainbowKit v2 · viem v2 · TypeScript
 
