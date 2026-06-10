@@ -1,24 +1,17 @@
 "use client";
 
 import HomeContent from "@/components/HomeContent";
-import {useAccount} from "wagmi";
+import { useAccount } from "wagmi";
 
 export default function Home() {
-  const account = useAccount();
+  const { isConnected } = useAccount();
   return (
-   <div>
-    {isConnected ? (
-      <div>
+    <div>
+      {isConnected ? (
         <HomeContent />
-      </div>
-      
-    ) : (
-      <div>
-        please connect your wallet to use the app
-      </div>
-    )
-    }
-    
-   </div>
+      ) : (
+        <div>please connect your wallet to use the app</div>
+      )}
+    </div>
   );
 }

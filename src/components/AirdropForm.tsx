@@ -16,70 +16,49 @@ export default function AirdropForm() {
     const config = useConfig();
     const account = useAccount();
     const total: number = useMemo(() => calculateTotal(amounts),[amounts]);
-    const {data: hash, isPending, writeContractAsync} = useWriteContract();
+    const { isPending, writeContractAsync } = useWriteContract();
 
-    async function getApprovedAmount(tSenderAddress:string | null):Promise<number> {
-        if(!tSenderAddress) {
-            alert("No address found. Please use a valid chain.")
-            return 0;
+    async function getApprovedAmount(tSenderAddress: string | null): Promise<bigint> {
+        if (!tSenderAddress) {
+            alert("No address found. Please use a valid chain.");
+            return 0n;
         }
-        const response = await readContract(config,{
+        const response = await readContract(config, {
             abi: erc20Abi,
             address: tokenAddress as `0x${string}`,
             functionName: "allowance",
-            args: [account.address, tSenderAddress as `0x${string}`]
+            args: [account.address, tSenderAddress as `0x${string}`],
         });
-        
-        return response as number;
+        return response as bigint;
     }
 
     async function handleSubmit() {
-        // 1a.If approved, moved to step 2
-        // 1b. Approve our tsender contract to send our tokens
-        // 2.Call the airdrop function on the tsender contract
-        // 3.Wait for the transaction to be minjed
         const tSenderAddress = chainsToTSender[chainId]["tsender"];
         const approvedAmount = await getApprovedAmount(tSenderAddress);
+        const totalBigInt = BigInt(total);
 
-        if(approvedAmount < total) {
+        if (approvedAmount < totalBigInt) {
             const approvalHash = await writeContractAsync({
-            abi: erc20Abi,
-            address: tokenAddress as `0x${string}`,
-            functionName: "approve",
-            args: [tSenderAddress as `0x${string}`, BigInt(total)]
-            })
-        const approvalReceipt = await waitForTransactionReceipt(config, {
-            hash: approvalHash,
-            })
-        console.log("Approval confirmed", approvalReceipt);
+                abi: erc20Abi,
+                address: tokenAddress as `0x${string}`,
+                functionName: "approve",
+                args: [tSenderAddress as `0x${string}`, totalBigInt],
+            });
+            const approvalReceipt = await waitForTransactionReceipt(config, { hash: approvalHash });
+            console.log("Approval confirmed", approvalReceipt);
+        }
 
         await writeContractAsync({
-                abi: tsenderAbi,
-                address: tSenderAddress as `0x${string}`,
-                functionName: "airdropERC20",
-                args: [
-                    tokenAddress,
-                    // Comma or new line separated
-                    recipients.split(/[,\n]+/).map(addr => addr.trim()).filter(addr => addr !== ''),
-                    amounts.split(/[,\n]+/).map(amt => amt.trim()).filter(amt => amt !== ''),
-                    BigInt(total),
-                ],
-            })
-
-        }else{
-            await writeContractAsync({
-                abi: tsenderAbi,
-                address: tSenderAddress as `0x${string}`,
-                functionName: "airdropERC20",
-                args: [
-                    tokenAddress,
-                    // Comma or new line separated
-                    recipients.split(/[,\n]+/).map(addr => addr.trim()).filter(addr => addr !== ''),
-                    amounts.split(/[,\n]+/).map(amt => amt.trim()).filter(amt => amt !== ''),
-                    BigInt(total),
-                ],
-            })
-        }
+            abi: tsenderAbi,
+            address: tSenderAddress as `0x${string}`,
+            functionName: "airdropERC20",
+            args: [
+                tokenAddress,
+                recipients.split(/[,\n]+/).map(addr => addr.trim()).filter(addr => addr !== ""),
+                amounts.split(/[,\n]+/).map(amt => amt.trim()).filter(amt => amt !== ""),
+                totalBigInt,
+            ],
+        });
     }
 
 
