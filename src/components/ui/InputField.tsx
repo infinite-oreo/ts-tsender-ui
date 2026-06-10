@@ -1,3 +1,9 @@
+/**
+ * [INPUT]:  无外部依赖，纯受控组件，接收 label/placeholder/value/onChange/large/type props
+ * [OUTPUT]: 导出 InputForm 组件和 InputFormProps 类型，渲染单行 input 或多行 textarea
+ * [POS]:    components/ui/ 的原子输入组件，被 AirdropForm 多次消费
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 export interface InputFormProps {
     label: string
     placeholder: string

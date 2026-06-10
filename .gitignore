@@ -40,6 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# build cache
+cache/
+
 # claude
 CLAUDE.md
 **/CLAUDE.md
