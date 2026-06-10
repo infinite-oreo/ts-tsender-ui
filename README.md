@@ -1,102 +1,103 @@
 # TSender UI
 
-A 100% client-side UI for the TSender contract.
+ERC20 批量空投前端，100% 客户端渲染，对接 TSender 合约。
 
-Smart Contracts: https://github.com/Cyfrin/TSender/
+智能合约仓库：https://github.com/Cyfrin/TSender/
 
-- [TSender UI](#tsender-ui)
-- [Getting Started](#getting-started)
-    - [Requirements](#requirements)
-        - [Environment Variables](#environment-variables)
-    - [Setup](#setup)
-- [Testing](#testing)
-    - [Unit](#unit)
-    - [e2e](#e2e)
-- [Contributing](#contributing)
+**技术栈：** Next.js 16 · Tailwind v4 · wagmi v3 · RainbowKit v2 · viem v2 · TypeScript
 
-# Getting Started
+**支持网络：** Ethereum · Arbitrum · Optimism · Base · zkSync · Sepolia · Anvil（本地）
 
-## Requirements
+---
 
-- [node](https://nodejs.org/en/download)
-    - You'll know you've installed it right if you can run `node --version` and get a response like `v23.0.1`
-- [pnpm](https://pnpm.io/)
-    - You'll know you've installed it right if you can run `pnpm --version` and get a response like `10.1.0`
-- [git](https://git-scm.com/downloads)
-    - You'll know you've installed it right if you can run `git --version` and get a response like `git version 2.33.0`
+- [快速开始](#快速开始)
+  - [环境要求](#环境要求)
+  - [环境变量](#环境变量)
+  - [本地运行](#本地运行)
+- [测试](#测试)
+- [项目结构](#项目结构)
 
-### Environment Variables
+---
 
-You'll need a `.env.local` the following environment variables:
+# 快速开始
 
-- `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`: Project ID from [reown cloud](https://cloud.reown.com/)
+## 环境要求
 
-## Setup
+- [Node.js](https://nodejs.org/en/download) — `node --version` 应输出 `v20+`
+- [pnpm](https://pnpm.io/) — `pnpm --version` 应输出 `9+`
+- [git](https://git-scm.com/downloads) — `git --version` 应输出 `2+`
+- [Foundry](https://getfoundry.sh/)（本地测试可选）— `anvil --version` 应有输出
+
+## 环境变量
+
+在项目根目录创建 `.env.local`：
+
+```
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=你的ProjectID
+```
+
+Project ID 从 [reown cloud](https://cloud.reown.com/) 获取，免费注册即可。
+
+## 本地运行
 
 ```bash
-git clone https://github.com/cyfrin/tsender-ui
-cd tsender-ui
+git clone https://github.com/infinite-oreo/ts-tsender-ui
+cd ts-tsender-ui
 pnpm install
+```
+
+**可选：启动本地 Anvil 链（用于本地测试）**
+
+在第一个终端：
+
+```bash
 pnpm anvil
 ```
 
-You'll want to make sure you have a Metamask/Rabby wallet connected to your anvil instance. Ideally you're connected to the wallet that comes with the default anvil instance. This will have some mock tokens in it.
+确保 MetaMask / Rabby 钱包已连接到本地 Anvil 实例（`http://127.0.0.1:8545`，Chain ID `31337`）。Anvil 默认账户内置有测试代币。
 
-Then, in a second browser run:
+**启动前端**
+
+在另一个终端：
 
 ```bash
-pnpm run dev
+pnpm dev
 ```
 
-# Testing
+浏览器打开 [http://localhost:3000](http://localhost:3000)。
 
-## Unit
+---
+
+# 测试
+
+## 单元测试
 
 ```bash
 pnpm test:unit
 ```
 
-## e2e
+使用 Vitest 运行，覆盖 `calculateTotal` 等纯函数逻辑。
 
-Playwright should also install the browsers needed to run tests.
+---
 
-To test e2e, do the following
-
-```bash
-pnpm cache
-```
-
-Then run:
-
-```bash
-pnpm test:e2e
-```
-
-This will throw an error like:
+# 项目结构
 
 ```
-Error: Cache for 08a20e3c7fc77e6ae298 does not exist. Create it first!
+src/
+├── app/
+│   ├── ClientLayout.tsx   # 客户端壳层，隔离 WalletConnect 的 SSR 问题
+│   ├── layout.tsx         # 根布局（Server Component）
+│   ├── page.tsx           # 首页，根据钱包连接状态路由渲染
+│   ├── providers.tsx      # wagmi + RainbowKit 上下文
+│   └── globals.css        # Tailwind v4 全局样式
+├── components/
+│   ├── AirdropForm.tsx    # 核心表单，执行 approve + airdropERC20
+│   ├── Header.tsx         # 顶部导航 + 钱包连接按钮
+│   ├── HomeContent.tsx    # 已连接状态的页面容器
+│   └── ui/
+│       └── InputField.tsx # 通用输入组件
+├── utils/
+│   └── calculateTotal/    # 金额字符串求和纯函数
+├── constants.ts           # 合约 ABI + 各链地址映射
+└── rainbowKitConfig.tsx   # wagmi 全局配置
 ```
-
-The `08a20e3c7fc77e6ae298` is your `CACHE_NAME`
-
-In your `.cache-synpress` folder, rename the folder that isn't `metamask-chrome-***` to your `CACHE_NAME`.
-
-Then, you should be able to run:
-
-```
-pnpm test:e2e
-```
-
-And it'll work!
-
-# Contributing
-
-For those who want to contribute, including running tests, please see the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
-
-<!-- # Install from scratch notes
-
-When adding Tailwind, remember to remove `supports-color` -->
-
-<!-- Testing: -->
-<!-- -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/dom vite-tsconfig-paths -->
